@@ -8,7 +8,7 @@ from db import init_db
 from handlers import routers
 import os
 
-init_db()
+async def init_db()
 
 TOKEN = os.getenv("BOT_TOKEN")
 
