@@ -2,7 +2,6 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from db import cursor, conn
 from database.db_queries import get_user_clans, delete_clan_by_public_id
 
 router = Router()
