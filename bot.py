@@ -1,16 +1,14 @@
 import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.context import FSMContext
-
-from db import init_db
-from handlers import routers
 import os
 
-async def init_db()
+from aiogram import Bot, Dispatcher
+from db import init_db
+from handlers import routers
 
 TOKEN = os.getenv("BOT_TOKEN")
+
+if not TOKEN:
+    raise ValueError("BOT_TOKEN is not set in environment variables")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -18,9 +16,13 @@ dp = Dispatcher()
 for r in routers:
     dp.include_router(r)
 
+
 async def main():
+    await init_db()   # ✅ ВАЖНО: await
+
     print("BOT STARTED")
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
