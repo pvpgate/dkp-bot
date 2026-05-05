@@ -6,11 +6,11 @@ from aiogram.fsm.context import FSMContext
 
 from db import init_db, cursor, conn
 from handlers import routers
-
+import os
 
 init_db()
 
-TOKEN = "8778590900:AAGoe1_mQHGgwoze-ZOLSAaKicOrD1yWREo"
+TOKEN = os.getenv("BOT_TOKEN")
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
