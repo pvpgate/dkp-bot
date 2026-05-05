@@ -3,242 +3,261 @@ from db import pool
 import random
 
 # CLANS
-# def get_user_clans(user_id: int):
-#     cursor.execute("""
-#         SELECT c.id, c.public_id, c.name, cm.role, cm.dkp
-#         FROM clan_members cm
-#         JOIN clans c ON c.id = cm.clan_id
-#         WHERE cm.user_id = ?
-#     """, (user_id,))
-#     return cursor.fetchall()
+def get_user_clans(user_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     SELECT c.id, c.public_id, c.name, cm.role, cm.dkp
+    #     FROM clan_members cm
+    #     JOIN clans c ON c.id = cm.clan_id
+    #     WHERE cm.user_id = ?
+    # """, (user_id,))
+    # return cursor.fetchall()
 
 
-# def get_clan_by_id(clan_id: int):
-#     cursor.execute(
-#         "SELECT id, public_id, name FROM clans WHERE id = ?", 
-#         (clan_id,)
-#     )
-#     return cursor.fetchone()
+def get_clan_by_id(clan_id: int):
+    return {"ok": False}
+    # cursor.execute(
+    #     "SELECT id, public_id, name FROM clans WHERE id = ?", 
+    #     (clan_id,)
+    # )
+    # return cursor.fetchone()
 
-# def get_clan_by_public_id(public_id: int):
-#     cursor.execute(
-#         "SELECT id, public_id, name FROM clans WHERE public_id = ?",
-#         (public_id,)
-#     )
-#     return cursor.fetchone()
+def get_clan_by_public_id(public_id: int):
+    return {"ok": False}
+    # cursor.execute(
+    #     "SELECT id, public_id, name FROM clans WHERE public_id = ?",
+    #     (public_id,)
+    # )
+    # return cursor.fetchone()
 
-# def get_clan_members(clan_id: int):
-#     cursor.execute("""
-#         SELECT cm.user_id, cm.username, cm.role, cm.dkp
-#         FROM clan_members cm
-#         join clans c ON c.id = cm.clan_id
-#         WHERE c.public_id = ?
-#     """, (clan_id,))
-#     return cursor.fetchall()
+def get_clan_members(clan_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     SELECT cm.user_id, cm.username, cm.role, cm.dkp
+    #     FROM clan_members cm
+    #     join clans c ON c.id = cm.clan_id
+    #     WHERE c.public_id = ?
+    # """, (clan_id,))
+    # return cursor.fetchall()
 
-# def remove_member_from_clan(clan_id: int, user_id: int):
-#     cursor.execute("""
-#         DELETE FROM clan_members
-#         WHERE clan_id = ? AND user_id = ?
-#     """, (clan_id, user_id))
-#     conn.commit()
-
-
-# def is_user_in_clan(user_id: int, clan_id: int):
-#     cursor.execute("""
-#         SELECT 1 FROM clan_members
-#         WHERE user_id = ? AND clan_id = ?
-#     """, (user_id, clan_id))
-
-#     return cursor.fetchone() is not None
-
-# def delete_clan_by_public_id(public_id: int):
-#     # 1. получаем внутренний id
-#     cursor.execute(
-#         "SELECT id FROM clans WHERE public_id = ?",
-#         (public_id,)
-#     )
-#     clan = cursor.fetchone()
-
-#     if not clan:
-#         return False
-
-#     clan_id = clan[0]
-
-#     # 2. удаляем всё связанное
-#     cursor.execute("DELETE FROM clan_requests WHERE clan_id = ?", (clan_id,))
-#     cursor.execute("DELETE FROM clan_members WHERE clan_id = ?", (clan_id,))
-#     cursor.execute("DELETE FROM clans WHERE id = ?", (clan_id,))
-
-#     conn.commit()
-#     return True
+def remove_member_from_clan(clan_id: int, user_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     DELETE FROM clan_members
+    #     WHERE clan_id = ? AND user_id = ?
+    # """, (clan_id, user_id))
+    # conn.commit()
 
 
+def is_user_in_clan(user_id: int, clan_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     SELECT 1 FROM clan_members
+    #     WHERE user_id = ? AND clan_id = ?
+    # """, (user_id, clan_id))
 
-# def leave_clan(clan_id: int, user_id: int):
-#     cursor.execute("""
-#         DELETE FROM clan_members
-#         WHERE clan_id = ? AND user_id = ?
-#     """, (clan_id, user_id))
+    # return cursor.fetchone() is not None
 
-#     conn.commit()
+def delete_clan_by_public_id(public_id: int):
+    return {"ok": False}
+    # 1. получаем внутренний id
+    # cursor.execute(
+    #     "SELECT id FROM clans WHERE public_id = ?",
+    #     (public_id,)
+    # )
+    # clan = cursor.fetchone()
 
-# def update_member_role(clan_id: int, user_id: int, role: str):
-#     cursor.execute("""
-#         UPDATE clan_members
-#         SET role = ?
-#         WHERE clan_id = ? AND user_id = ?
-#     """, (role, clan_id, user_id))
-#     conn.commit()
+    # if not clan:
+    #     return False
 
+    # clan_id = clan[0]
 
-# # Ивенты и ДКП
-# def update_member_dkp(clan_id: int, user_id: int, new_dkp: int):
-#     cursor.execute("""
-#         UPDATE clan_members
-#         SET dkp = ?
-#         WHERE clan_id = ? AND user_id = ?
-#     """, (new_dkp, clan_id, user_id))
-#     conn.commit()
+    # # 2. удаляем всё связанное
+    # cursor.execute("DELETE FROM clan_requests WHERE clan_id = ?", (clan_id,))
+    # cursor.execute("DELETE FROM clan_members WHERE clan_id = ?", (clan_id,))
+    # cursor.execute("DELETE FROM clans WHERE id = ?", (clan_id,))
 
-
-# # REQUESTS
-# def get_user_clan_requests(user_id: int):
-#     cursor.execute("""
-#         SELECT c.name, c.public_id, cr.status
-#         FROM clan_requests cr
-#         JOIN clans c ON c.id = cr.clan_id
-#         WHERE cr.user_id = ?
-#     """, (user_id,))
-#     return cursor.fetchall()
-
-# def get_pending_requests_for_clans(clan_ids: list):
-#     query = f"""
-#         SELECT cr.id, cr.user_id, cr.username, c.name
-#         FROM clan_requests cr
-#         JOIN clans c ON c.id = cr.clan_id
-#         WHERE cr.clan_id IN ({','.join(['?']*len(clan_ids))})
-#         AND cr.status = 'pending'
-#     """
-
-#     cursor.execute(query, clan_ids)
-#     return cursor.fetchall()
-
-
-# def get_request_by_id(request_id: int):
-#     cursor.execute("""
-#         SELECT id, user_id, username, clan_id, status
-#         FROM clan_requests
-#         WHERE id = ?
-#     """, (request_id,))
-
-#     return cursor.fetchone()
+    # conn.commit()
+    # return True
 
 
 
-# def accept_request(request_id: int, user_id: int, username: str, clan_id: int):
-#     # добавляем в клан
-#     cursor.execute("""
-#         INSERT INTO clan_members (user_id, username, clan_id, role, dkp)
-#         VALUES (?, ?, ?, 'member', 0)
-#     """, (user_id, username, clan_id))
+def leave_clan(clan_id: int, user_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     DELETE FROM clan_members
+    #     WHERE clan_id = ? AND user_id = ?
+    # """, (clan_id, user_id))
 
-#     # обновляем статус
-#     cursor.execute("""
-#         UPDATE clan_requests
-#         SET status = 'accepted'
-#         WHERE id = ?
-#     """, (request_id,))
+    # conn.commit()
 
-#     conn.commit()
-
-# def reject_request(request_id: int):
-#     cursor.execute("""
-#         UPDATE clan_requests
-#         SET status = 'rejected'
-#         WHERE id = ?
-#     """, (request_id,))
-
-#     conn.commit()
+def update_member_role(clan_id: int, user_id: int, role: str):
+    return {"ok": False}
+    # cursor.execute("""
+    #     UPDATE clan_members
+    #     SET role = ?
+    #     WHERE clan_id = ? AND user_id = ?
+    # """, (role, clan_id, user_id))
+    # conn.commit()
 
 
-# def has_pending_request(user_id: int, clan_id: int):
-#     cursor.execute("""
-#         SELECT 1 FROM clan_requests
-#         WHERE user_id = ? AND clan_id = ? AND status = 'pending'
-#     """, (user_id, clan_id))
-
-#     return cursor.fetchone() is not None
-
-# def create_clan_request(user_id: int, username: str, clan_id: int):
-#     cursor.execute("""
-#         INSERT INTO clan_requests (user_id, username, clan_id, status)
-#         VALUES (?, ?, ?, 'pending')
-#     """, (user_id, username, clan_id))
-
-#     conn.commit()
+# Ивенты и ДКП
+def update_member_dkp(clan_id: int, user_id: int, new_dkp: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     UPDATE clan_members
+    #     SET dkp = ?
+    #     WHERE clan_id = ? AND user_id = ?
+    # """, (new_dkp, clan_id, user_id))
+    # conn.commit()
 
 
+# REQUESTS
+def get_user_clan_requests(user_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     SELECT c.name, c.public_id, cr.status
+    #     FROM clan_requests cr
+    #     JOIN clans c ON c.id = cr.clan_id
+    #     WHERE cr.user_id = ?
+    # """, (user_id,))
+    # return cursor.fetchall()
 
-# # OTHER
-# def generate_clan_id():
-#     return random.randint(100000, 999999)
+def get_pending_requests_for_clans(clan_ids: list):
+    return {"ok": False}
+    # query = f"""
+    #     SELECT cr.id, cr.user_id, cr.username, c.name
+    #     FROM clan_requests cr
+    #     JOIN clans c ON c.id = cr.clan_id
+    #     WHERE cr.clan_id IN ({','.join(['?']*len(clan_ids))})
+    #     AND cr.status = 'pending'
+    # """
 
-# async def generate_unique_clan_id():
-#     while True:
-#         clan_id = generate_clan_id()
+    # cursor.execute(query, clan_ids)
+    # return cursor.fetchall()
 
-#         async with pool.acquire() as conn:
-#             exists = await conn.fetchval(
-#                 "SELECT 1 FROM clans WHERE public_id = $1",
-#                 clan_id
-#             )
 
-#         if not exists:
-#             return clan_id
+def get_request_by_id(request_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     SELECT id, user_id, username, clan_id, status
+    #     FROM clan_requests
+    #     WHERE id = ?
+    # """, (request_id,))
 
-# async def create_clan_db(name: str, owner_id: int, owner_name: str):
-#     async with pool.acquire() as conn:
+    # return cursor.fetchone()
 
-#         # проверка на существующий клан
-#         existing = await conn.fetchrow(
-#             "SELECT id FROM clans WHERE LOWER(name) = LOWER($1)",
-#             name
-#         )
 
-#         if existing:
-#             return {
-#                 "ok": False,
-#                 "error": "CLAN_ALREADY_EXISTS"
-#             }
 
-#         # генерируем ID
-#         public_id = await generate_unique_clan_id()
+def accept_request(request_id: int, user_id: int, username: str, clan_id: int):
+    return {"ok": False}
+    # добавляем в клан
+    # cursor.execute("""
+    #     INSERT INTO clan_members (user_id, username, clan_id, role, dkp)
+    #     VALUES (?, ?, ?, 'member', 0)
+    # """, (user_id, username, clan_id))
 
-#         # создаём клан
-#         clan_id = await conn.fetchval(
-#             """
-#             INSERT INTO clans (name, owner_id, owner_name, public_id)
-#             VALUES ($1, $2, $3, $4)
-#             RETURNING id
-#             """,
-#             name, owner_id, owner_name, public_id
-#         )
+    # # обновляем статус
+    # cursor.execute("""
+    #     UPDATE clan_requests
+    #     SET status = 'accepted'
+    #     WHERE id = ?
+    # """, (request_id,))
 
-#         # добавляем лидера
-#         await conn.execute(
-#             """
-#             INSERT INTO clan_members (user_id, username, clan_id, role, dkp)
-#             VALUES ($1, $2, $3, $4, $5)
-#             """,
-#             owner_id, owner_name, clan_id, "leader", 0
-#         )
+    # conn.commit()
 
-#         return {
-#             "ok": True,
-#             "clan_id": clan_id,
-#             "public_id": public_id,
-#             "name": name
-#         }
+def reject_request(request_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     UPDATE clan_requests
+    #     SET status = 'rejected'
+    #     WHERE id = ?
+    # """, (request_id,))
+
+    # conn.commit()
+
+
+def has_pending_request(user_id: int, clan_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     SELECT 1 FROM clan_requests
+    #     WHERE user_id = ? AND clan_id = ? AND status = 'pending'
+    # """, (user_id, clan_id))
+
+    # return cursor.fetchone() is not None
+
+def create_clan_request(user_id: int, username: str, clan_id: int):
+    return {"ok": False}
+    # cursor.execute("""
+    #     INSERT INTO clan_requests (user_id, username, clan_id, status)
+    #     VALUES (?, ?, ?, 'pending')
+    # """, (user_id, username, clan_id))
+
+    # conn.commit()
+
+
+
+# OTHER
+def generate_clan_id():
+    return random.randint(100000, 999999)
+
+async def generate_unique_clan_id():
+    return {"ok": False}
+    # while True:
+    #     clan_id = generate_clan_id()
+
+    #     async with pool.acquire() as conn:
+    #         exists = await conn.fetchval(
+    #             "SELECT 1 FROM clans WHERE public_id = $1",
+    #             clan_id
+    #         )
+
+    #     if not exists:
+    #         return clan_id
+
+async def create_clan_db(name: str, owner_id: int, owner_name: str):
+    return {"ok": False}
+    # async with pool.acquire() as conn:
+
+    #     # проверка на существующий клан
+    #     existing = await conn.fetchrow(
+    #         "SELECT id FROM clans WHERE LOWER(name) = LOWER($1)",
+    #         name
+    #     )
+
+    #     if existing:
+    #         return {
+    #             "ok": False,
+    #             "error": "CLAN_ALREADY_EXISTS"
+    #         }
+
+    #     # генерируем ID
+    #     public_id = await generate_unique_clan_id()
+
+    #     # создаём клан
+    #     clan_id = await conn.fetchval(
+    #         """
+    #         INSERT INTO clans (name, owner_id, owner_name, public_id)
+    #         VALUES ($1, $2, $3, $4)
+    #         RETURNING id
+    #         """,
+    #         name, owner_id, owner_name, public_id
+    #     )
+
+    #     # добавляем лидера
+    #     await conn.execute(
+    #         """
+    #         INSERT INTO clan_members (user_id, username, clan_id, role, dkp)
+    #         VALUES ($1, $2, $3, $4, $5)
+    #         """,
+    #         owner_id, owner_name, clan_id, "leader", 0
+    #     )
+
+    #     return {
+    #         "ok": True,
+    #         "clan_id": clan_id,
+    #         "public_id": public_id,
+    #         "name": name
+    #     }
 
 
