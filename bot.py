@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from db import init_db, cursor, conn
+from db import init_db
 from handlers import routers
 import os
 
