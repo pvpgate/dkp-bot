@@ -1,38 +1,15 @@
-import sqlite3
+import os
+import asyncpg
 
-conn = sqlite3.connect("dkp.db")
-cursor = conn.cursor()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-def init_db():
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS clans (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        public_id INTEGER UNIQUE,
-        name TEXT,
-        owner_id INTEGER,
-        owner_name TEXT
-    )
-    """)
+pool = None
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS clan_requests (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        username TEXT,
-        clan_id INTEGER,
-        status TEXT DEFAULT 'pending'
-    )
-    """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS clan_members (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        username TEXT,
-        clan_id INTEGER,
-        role TEXT DEFAULT 'member',
-        dkp INTEGER DEFAULT 0
-    )
-    """)
+async def init_db():
+    global pool
+    pool = await asyncpg.create_pool(DATABASE_URL)
 
-    conn.commit()
+    async with pool.acquire() as conn:
+        result = await conn.fetchval("SELECT 1")
+        print("DB CONNECTED:", result)
