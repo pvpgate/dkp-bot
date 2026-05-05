@@ -1,4 +1,6 @@
 from db import cursor, conn
+from db import pool
+import random
 
 # CLANS
 def get_user_clans(user_id: int):
@@ -176,5 +178,67 @@ def create_clan_request(user_id: int, username: str, clan_id: int):
 
     conn.commit()
 
+
+
+# OTHER
+def generate_clan_id():
+    return random.randint(100000, 999999)
+
+async def generate_unique_clan_id():
+    while True:
+        clan_id = generate_clan_id()
+
+        async with pool.acquire() as conn:
+            exists = await conn.fetchval(
+                "SELECT 1 FROM clans WHERE public_id = $1",
+                clan_id
+            )
+
+        if not exists:
+            return clan_id
+
+async def create_clan_db(name: str, owner_id: int, owner_name: str):
+    async with pool.acquire() as conn:
+
+        # проверка на существующий клан
+        existing = await conn.fetchrow(
+            "SELECT id FROM clans WHERE LOWER(name) = LOWER($1)",
+            name
+        )
+
+        if existing:
+            return {
+                "ok": False,
+                "error": "CLAN_ALREADY_EXISTS"
+            }
+
+        # генерируем ID
+        public_id = await generate_unique_clan_id()
+
+        # создаём клан
+        clan_id = await conn.fetchval(
+            """
+            INSERT INTO clans (name, owner_id, owner_name, public_id)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id
+            """,
+            name, owner_id, owner_name, public_id
+        )
+
+        # добавляем лидера
+        await conn.execute(
+            """
+            INSERT INTO clan_members (user_id, username, clan_id, role, dkp)
+            VALUES ($1, $2, $3, $4, $5)
+            """,
+            owner_id, owner_name, clan_id, "leader", 0
+        )
+
+        return {
+            "ok": True,
+            "clan_id": clan_id,
+            "public_id": public_id,
+            "name": name
+        }
 
 
