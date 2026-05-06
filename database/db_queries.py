@@ -192,6 +192,7 @@ def has_pending_request(user_id: int, clan_id: int):
 
     # return cursor.fetchone() is not None
 
+
 async def create_clan_request(user_id: int, username: str, public_id: int):
     pool = get_pool()
 
