@@ -1,5 +1,5 @@
 # from db import cursor, conn
-from db import pool
+from db import pool, get_pool
 import random
 
 # CLANS
