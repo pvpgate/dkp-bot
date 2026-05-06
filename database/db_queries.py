@@ -192,14 +192,53 @@ def has_pending_request(user_id: int, clan_id: int):
 
     # return cursor.fetchone() is not None
 
-def create_clan_request(user_id: int, username: str, clan_id: int):
-    return {"ok": False}
-    # cursor.execute("""
-    #     INSERT INTO clan_requests (user_id, username, clan_id, status)
-    #     VALUES (?, ?, ?, 'pending')
-    # """, (user_id, username, clan_id))
+async def create_clan_request(user_id: int, username: str, public_id: int):
+    pool = get_pool()
 
-    # conn.commit()
+    async with pool.acquire() as conn:
+
+        # 1. найти клан по public_id
+        clan = await conn.fetchrow(
+            "SELECT id FROM clans WHERE public_id = $1",
+            public_id
+        )
+
+        if not clan:
+            return {"ok": False, "error": "CLAN_NOT_FOUND"}
+
+        clan_id = clan["id"]
+
+        # 2. проверить — уже в клане?
+        existing_member = await conn.fetchrow(
+            "SELECT 1 FROM clan_members WHERE user_id = $1",
+            user_id
+        )
+
+        if existing_member:
+            return {"ok": False, "error": "ALREADY_IN_CLAN"}
+
+        # 3. уже есть заявка?
+        existing_request = await conn.fetchrow(
+            """
+            SELECT 1 FROM clan_requests
+            WHERE user_id = $1 AND clan_id = $2 AND status = 'pending'
+            """,
+            user_id, clan_id
+        )
+
+        if existing_request:
+            return {"ok": False, "error": "REQUEST_ALREADY_EXISTS"}
+
+        # 4. создаём заявку
+        await conn.execute(
+            """
+            INSERT INTO clan_requests (user_id, username, clan_id)
+            VALUES ($1, $2, $3)
+            """,
+            user_id, username, clan_id
+        )
+
+        return {"ok": True}
 
 
 
