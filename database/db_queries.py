@@ -3,15 +3,18 @@ from db import pool, get_pool
 import random
 
 # CLANS
-def get_user_clans(user_id: int):
-    return {"ok": False}
-    # cursor.execute("""
-    #     SELECT c.id, c.public_id, c.name, cm.role, cm.dkp
-    #     FROM clan_members cm
-    #     JOIN clans c ON c.id = cm.clan_id
-    #     WHERE cm.user_id = ?
-    # """, (user_id,))
-    # return cursor.fetchall()
+async def get_user_clans(user_id: int):
+    pool = get_pool()
+
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT c.id, c.public_id, c.name, cm.role, cm.dkp
+            FROM clan_members cm
+            JOIN clans c ON c.id = cm.clan_id
+            WHERE cm.user_id = $1
+        """, user_id)
+
+    return rows
 
 
 def get_clan_by_id(clan_id: int):
@@ -113,15 +116,18 @@ def update_member_dkp(clan_id: int, user_id: int, new_dkp: int):
 
 
 # REQUESTS
-def get_user_clan_requests(user_id: int):
-    return {"ok": False}
-    # cursor.execute("""
-    #     SELECT c.name, c.public_id, cr.status
-    #     FROM clan_requests cr
-    #     JOIN clans c ON c.id = cr.clan_id
-    #     WHERE cr.user_id = ?
-    # """, (user_id,))
-    # return cursor.fetchall()
+async def get_user_clan_requests(user_id: int):
+    pool = get_pool()
+
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT c.name, c.public_id, cr.status
+            FROM clan_requests cr
+            JOIN clans c ON c.id = cr.clan_id
+            WHERE cr.user_id = $1
+        """, user_id)
+
+    return rows
 
 def get_pending_requests_for_clans(clan_ids: list):
     return {"ok": False}

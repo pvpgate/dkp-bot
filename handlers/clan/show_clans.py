@@ -11,36 +11,40 @@ router = Router()
 
 
 async def build_clans_text(user_id: int):
-    clans = get_user_clans(user_id)
-    requests = get_user_clan_requests(user_id)
+    clans = await get_user_clans(user_id)
+    requests = await get_user_clan_requests(user_id)
 
     if not clans:
         return "❌ Вы не состоите ни в одном клане"
 
     text = "🏰 Ваши кланы:\n\n"
 
-    for clan_id, public_id, name, role, dkp in clans:
-        role_emoji = "👑" if role == "leader" else "👤"
+    for clan in clans:
+        role_emoji = "👑" if clan["role"] == "leader" else "👤"
+
         text += (
-            f"{role_emoji} {name}\n"
-            f"   ID: {public_id}\n"
-            f"   Роль: {role}\n"
-            f"   DKP: {dkp}\n\n"
+            f"{role_emoji} {clan['name']}\n"
+            f"   ID: {clan['public_id']}\n"
+            f"   Роль: {clan['role']}\n"
+            f"   DKP: {clan['dkp']}\n\n"
         )
 
     text += "📩 Ваши заявки:\n"
 
-    # ❗ фильтруем только не-accepted заявки
-    filtered_requests = [r for r in requests if r[2] != "accepted"]
+    # фильтруем только не-accepted заявки
+    filtered_requests = [
+        r for r in requests if r["status"] != "accepted"
+    ]
 
     if filtered_requests:
-        for clan_name, public_id, status in filtered_requests:
+        for req in filtered_requests:
             status_emoji = (
-                "⏳" if status == "pending"
-                else "❌" if status == "rejected"
+                "⏳" if req["status"] == "pending"
+                else "❌" if req["status"] == "rejected"
                 else "✅"
             )
-            text += f"- {clan_name} | {status_emoji} {status}\n"
+
+            text += f"- {req['name']} | {status_emoji} {req['status']}\n"
     else:
         text += "- нет заявок\n"
 
