@@ -51,8 +51,8 @@ async def process_join_clan(message: Message, state: FSMContext):
     if not result["ok"]:
         if result["error"] == "CLAN_NOT_FOUND":
             await message.answer("❌ Клан не найден")
-        elif result["error"] == "ALREADY_IN_CLAN":
-            await message.answer("❌ Вы уже состоите в клане")
+        elif result["error"] == "ALREADY_IN_THIS_CLAN":
+            await message.answer("❌ Вы уже состоите в этом клане")
         elif result["error"] == "REQUEST_ALREADY_EXISTS":
             await message.answer("⏳ Вы уже отправили заявку в этот клан")
         return

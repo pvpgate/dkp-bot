@@ -197,7 +197,7 @@ async def create_clan_request(user_id: int, username: str, public_id: int):
 
     async with pool.acquire() as conn:
 
-        # 1. найти клан по public_id
+        # 1. ищем клан
         clan = await conn.fetchrow(
             "SELECT id FROM clans WHERE public_id = $1",
             public_id
@@ -208,16 +208,19 @@ async def create_clan_request(user_id: int, username: str, public_id: int):
 
         clan_id = clan["id"]
 
-        # 2. проверить — уже в клане?
-        existing_member = await conn.fetchrow(
-            "SELECT 1 FROM clan_members WHERE user_id = $1",
-            user_id
+        # 2. проверяем: уже в ЭТОМ клане?
+        in_this_clan = await conn.fetchrow(
+            """
+            SELECT 1 FROM clan_members
+            WHERE user_id = $1 AND clan_id = $2
+            """,
+            user_id, clan_id
         )
 
-        if existing_member:
-            return {"ok": False, "error": "ALREADY_IN_CLAN"}
+        if in_this_clan:
+            return {"ok": False, "error": "ALREADY_IN_THIS_CLAN"}
 
-        # 3. уже есть заявка?
+        # 3. проверяем: уже есть заявка именно в ЭТОТ клан?
         existing_request = await conn.fetchrow(
             """
             SELECT 1 FROM clan_requests
