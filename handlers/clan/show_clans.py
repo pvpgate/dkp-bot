@@ -2,10 +2,8 @@ from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from database.db_queries import (
-    get_user_clans,
-    get_user_clan_requests
-)
+from database.queries.clans import get_user_clans
+from database.queries.requests import get_user_clan_requests
 
 router = Router()
 
