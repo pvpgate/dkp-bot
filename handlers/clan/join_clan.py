@@ -1,15 +1,10 @@
 from aiogram import Router, types
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command
 
-from database.db_queries import (
-    get_clan_by_public_id,
-    is_user_in_clan,
-    has_pending_request,
-    create_clan_request
-)
+from database.db_queries import create_clan_request
 
 router = Router()
 
@@ -19,56 +14,49 @@ class JoinClan(StatesGroup):
     waiting_for_clan_id = State()
 
 
-# 🔘 КНОПКА
+# 🔹 старт через команду
+@router.message(Command("join_clan"))
+async def join_clan_command(message: Message, state: FSMContext):
+    await message.answer("🏰 Введите ID клана:")
+    await state.set_state(JoinClan.waiting_for_clan_id)
+
+
+# 🔹 старт через кнопку
 @router.callback_query(lambda c: c.data == "join_clan")
-async def start_join(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer("Введите ID клана:")
+async def join_clan_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("🏰 Введите ID клана:")
     await state.set_state(JoinClan.waiting_for_clan_id)
     await callback.answer()
 
 
-# 💬 КОМАНДА
-@router.message(Command("join_clan"))
-async def start_join_command(message: Message, state: FSMContext):
-    await message.answer("Введите ID клана:")
-    await state.set_state(JoinClan.waiting_for_clan_id)
-
-
-# 🧠 ВВОД ID
+# 🔹 обработка ID
 @router.message(JoinClan.waiting_for_clan_id)
-async def process_join(message: Message, state: FSMContext):
+async def process_join_clan(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    username = message.from_user.username or "unknown"
+
+    # проверка числа
     if not message.text.isdigit():
-        await message.answer("❌ Введите числовой ID клана")
+        await message.answer("❌ ID клана должен быть числом")
         return
 
     public_id = int(message.text)
-    user_id = message.from_user.id
-    username = message.from_user.username
 
-    # 🔍 1. Проверка: существует ли клан
-    clan = get_clan_by_public_id(public_id)
-
-    if not clan:
-        await message.answer("❌ Клан не найден")
-        return
-
-    clan_id, pid, clan_name = clan  # clan_id — внутренний id
-
-    # 🚫 2. Уже в клане?
-    if is_user_in_clan(user_id, clan_id):
-        await message.answer("❌ Вы уже состоите в клане")
-        return
-
-    # 🚫 3. Уже есть заявка?
-    if has_pending_request(user_id, clan_id):
-        await message.answer("❌ Вы уже подали заявку в этот клан")
-        return
-
-    # ✅ 4. Создаём заявку
-    create_clan_request(user_id, username, clan_id)
-
-    await message.answer(
-        f"📩 Заявка в клан '{clan_name}' отправлена!"
+    result = await create_clan_request(
+        user_id=user_id,
+        username=username,
+        public_id=public_id
     )
+
+    if not result["ok"]:
+        if result["error"] == "CLAN_NOT_FOUND":
+            await message.answer("❌ Клан не найден")
+        elif result["error"] == "ALREADY_IN_CLAN":
+            await message.answer("❌ Вы уже состоите в клане")
+        elif result["error"] == "REQUEST_ALREADY_EXISTS":
+            await message.answer("⏳ Вы уже отправили заявку в этот клан")
+        return
+
+    await message.answer("✅ Заявка отправлена!")
 
     await state.clear()
