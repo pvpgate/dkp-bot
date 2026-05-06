@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
-from database.db_queries import create_clan_request
+from database.queries.requests import create_clan_request
 
 router = Router()
 

@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 
-from database.db_queries import create_clan_db
+from database.queries.clans import create_clan_db
 
 router = Router()
 

@@ -2,7 +2,7 @@ import asyncio
 import os
 
 from aiogram import Bot, Dispatcher
-from db import init_db
+from database.db import init_db
 from handlers import routers
 
 TOKEN = os.getenv("BOT_TOKEN")
