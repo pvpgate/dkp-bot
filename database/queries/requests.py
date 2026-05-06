@@ -1,11 +1,11 @@
-from database.db import pool, get_pool
+from database.db import get_pool
 
 
 # ----------------------------
 # ЗАЯВКИ в клан (для лидеров)
 # ----------------------------
 async def get_clan_requests(clan_id: int):
-    return await pool.fetch("""
+    return await get_pool().fetch("""
         SELECT id, user_id, username, status
         FROM clan_requests
         WHERE clan_id = $1 AND status = 'pending'
@@ -16,26 +16,21 @@ async def get_clan_requests(clan_id: int):
 # Заявки пользователя
 # ----------------------------
 async def get_user_clan_requests(user_id: int):
-    pool = get_pool()
 
-    async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT c.name, c.public_id, cr.status
-            FROM clan_requests cr
-            JOIN clans c ON c.id = cr.clan_id
-            WHERE cr.user_id = $1
-        """, user_id)
-
-    return rows
+    return await get_pool().fetch("""
+        SELECT c.name, c.public_id, cr.status
+        FROM clan_requests cr
+        JOIN clans c ON c.id = cr.clan_id
+        WHERE cr.user_id = $1
+    """, user_id)
 
 
 # ----------------------------
 # Заявки пользователя
 # ----------------------------
 async def create_clan_request(user_id: int, username: str, public_id: int):
-    pool = get_pool()
 
-    async with pool.acquire() as conn:
+    async with get_pool().acquire() as conn:
 
         # 1. ищем клан
         clan = await conn.fetchrow(
@@ -87,7 +82,7 @@ async def create_clan_request(user_id: int, username: str, public_id: int):
 # ПРИНЯТЬ заявку
 # ----------------------------
 async def accept_request(request_id: int):
-    async with pool.acquire() as conn:
+    async with get_pool().acquire() as conn:
 
         req = await conn.fetchrow("""
             SELECT user_id, username, clan_id
@@ -118,7 +113,7 @@ async def accept_request(request_id: int):
 # ОТКЛОНИТЬ заявку
 # ----------------------------
 async def reject_request(request_id: int):
-    await pool.execute("""
+    await get_pool().execute("""
         UPDATE clan_requests
         SET status = 'rejected'
         WHERE id = $1
